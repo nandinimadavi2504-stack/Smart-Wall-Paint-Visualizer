@@ -1,0 +1,32 @@
+header {
+  height: 70px;
+  background: #1565c0;
+
+  color: white;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  font-size: 22px;
+}
+
+main {
+  min-height: calc(100vh - 140px);
+}
+
+footer {
+  height: 70px;
+
+  background: #1565c0;
+
+  color: white;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+}
