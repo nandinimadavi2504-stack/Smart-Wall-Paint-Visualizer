@@ -1,1 +1,139 @@
-/* You can add global styles to this file, and also import other style files */
+/* =====================================================
+   Smart Wall Paint Visualizer - Global Design System
+===================================================== */
+
+/* Google Font */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+/* CSS Variables */
+:root {
+  --primary: #1565c0;
+  --primary-dark: #0d47a1;
+  --secondary: #ff9800;
+
+  --success: #4caf50;
+  --danger: #f44336;
+  --warning: #ffc107;
+
+  --background: #f5f7fa;
+  --surface: #ffffff;
+
+  --text: #212121;
+  --text-light: #616161;
+
+  --border: #e0e0e0;
+
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  --radius: 12px;
+}
+
+/* Reset */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body */
+
+body {
+  font-family: "Poppins", sans-serif;
+
+  background: var(--background);
+
+  color: var(--text);
+}
+
+/* Container */
+
+.container {
+  width: 90%;
+
+  max-width: 1400px;
+
+  margin: auto;
+}
+
+/* Buttons */
+
+.btn {
+  padding: 12px 24px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+
+  font-weight: 600;
+}
+
+.btn-primary {
+  background: var(--primary);
+
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+}
+
+/* Card */
+
+.card {
+  background: var(--surface);
+
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow);
+
+  padding: 25px;
+}
+
+/* Inputs */
+
+input {
+  width: 100%;
+
+  padding: 12px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 8px;
+
+  outline: none;
+}
+
+input:focus {
+  border-color: var(--primary);
+}
+
+/* Utilities */
+
+.text-center {
+  text-align: center;
+}
+
+.mt-1 {
+  margin-top: 10px;
+}
+.mt-2 {
+  margin-top: 20px;
+}
+.mt-3 {
+  margin-top: 30px;
+}
+
+.mb-1 {
+  margin-bottom: 10px;
+}
+.mb-2 {
+  margin-bottom: 20px;
+}
+.mb-3 {
+  margin-bottom: 30px;
+}
