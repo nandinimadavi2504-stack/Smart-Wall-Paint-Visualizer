@@ -1,0 +1,43 @@
+.navbar {
+  height: 70px;
+
+  background: var(--primary);
+
+  color: white;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding: 0 40px;
+
+  box-shadow: var(--shadow);
+}
+
+.logo {
+  font-size: 24px;
+
+  font-weight: 700;
+}
+
+ul {
+  list-style: none;
+
+  display: flex;
+
+  gap: 30px;
+}
+
+a {
+  color: white;
+
+  text-decoration: none;
+
+  font-weight: 600;
+}
+
+.active {
+  color: #ffd54f;
+}
