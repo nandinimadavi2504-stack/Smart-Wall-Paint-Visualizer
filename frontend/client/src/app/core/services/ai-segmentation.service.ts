@@ -1,3 +1,4 @@
+import { environment } from '../../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
@@ -5,8 +6,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root',
 })
 export class AiSegmentationService {
-  private apiUrl = 'http://127.0.0.1:8000';
-
+  private apiUrl = environment.aiApiUrl;
   constructor(private http: HttpClient) {}
 
   segmentImage(file: File) {

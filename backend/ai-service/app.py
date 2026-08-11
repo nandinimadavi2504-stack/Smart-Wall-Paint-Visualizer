@@ -23,8 +23,7 @@ app = FastAPI(
 # LOAD SAM MODEL
 # ==========================
 
-MODEL_PATH = "sam_vit_b_01ec64.pth"
-
+MODEL_PATH = "models/sam_vit_b_01ec64.pth"
 
 sam = sam_model_registry["vit_b"](
     checkpoint=MODEL_PATH

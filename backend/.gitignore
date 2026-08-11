@@ -1,12 +1,8 @@
 # Python
 
-ai-service/venv/
-ai-service/__pycache__/
+backend/ai-service/venv/
+backend/ai-service/__pycache__/
 *.pyc
-
-# Upload files
-
-uploads/
 
 # SAM model
 
@@ -16,6 +12,24 @@ uploads/
 
 node_modules/
 
-# Environment
+# Upload files
+
+backend/uploads/
+
+# Environment files
 
 .env
+
+# Angular build files
+
+dist/
+.angular/
+
+# Editor files
+
+.vscode/
+
+# OS files
+
+.DS_Store
+Thumbs.db
