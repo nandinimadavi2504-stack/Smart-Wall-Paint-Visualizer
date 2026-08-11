@@ -2,8 +2,20 @@
   <div class="register-card">
     <div class="register-header">
       <h1>🎨 Smart Wall Paint Visualizer</h1>
-      <p>Create your account</p>
+      <p>Create your account to continue</p>
     </div>
+
+    @if (successMessage) {
+      <div class="success-message">
+        {{ successMessage }}
+      </div>
+    }
+
+    @if (errorMessage) {
+      <div class="error-message">
+        {{ errorMessage }}
+      </div>
+    }
 
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
@@ -38,7 +50,7 @@
           registerForm.controls.email.touched &&
           registerForm.controls.email.invalid
         ) {
-          <small class="error"> Please enter a valid email. </small>
+          <small class="error"> Please enter a valid email address. </small>
         }
       </div>
 
@@ -47,7 +59,7 @@
 
         <input
           [type]="hidePassword ? 'password' : 'text'"
-          placeholder="Enter password"
+          placeholder="Enter your password"
           formControlName="password"
         />
 
@@ -55,7 +67,9 @@
           registerForm.controls.password.touched &&
           registerForm.controls.password.invalid
         ) {
-          <small class="error"> Password must be at least 6 characters. </small>
+          <small class="error">
+            Password must contain at least 6 characters.
+          </small>
         }
       </div>
 
@@ -64,7 +78,7 @@
 
         <input
           [type]="hideConfirmPassword ? 'password' : 'text'"
-          placeholder="Confirm password"
+          placeholder="Confirm your password"
           formControlName="confirmPassword"
         />
 
@@ -72,20 +86,23 @@
           registerForm.controls.confirmPassword.touched &&
           registerForm.controls.confirmPassword.invalid
         ) {
-          <small class="error"> Confirm your password. </small>
+          <small class="error"> Please confirm your password. </small>
         }
       </div>
 
-      <button type="submit" class="btn btn-primary register-btn">
-        Create Account
+      <button
+        class="btn btn-primary register-btn"
+        type="submit"
+        [disabled]="isLoading"
+      >
+        {{ isLoading ? "Creating Account..." : "Create Account" }}
       </button>
     </form>
 
     <div class="register-footer">
       <p>
         Already have an account?
-
-        <a routerLink="/login"> Login </a>
+        <a routerLink="/login">Login</a>
       </p>
     </div>
   </div>

@@ -1,0 +1,159 @@
+.workspace {
+  display: flex;
+  min-height: calc(100vh - 80px);
+  background: #f5f7fb;
+}
+
+/* Sidebar */
+
+.sidebar {
+  width: 300px;
+
+  background: #ffffff;
+
+  padding: 25px;
+
+  border-right: 1px solid #e5e5e5;
+
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+
+  position: relative;
+
+  z-index: 10;
+}
+
+.sidebar h2 {
+  color: #1565c0;
+
+  margin-bottom: 30px;
+}
+
+.tool-section {
+  margin-bottom: 25px;
+
+  position: relative;
+
+  z-index: 20;
+}
+
+.tool-section label {
+  display: block;
+
+  margin-bottom: 10px;
+
+  font-weight: 600;
+}
+
+/* Color picker */
+
+.tool-section input[type="color"] {
+  width: 100%;
+
+  height: 50px;
+
+  border: none;
+
+  cursor: pointer;
+}
+
+/* Range slider */
+
+.tool-section input[type="range"] {
+  width: 100%;
+
+  cursor: pointer;
+}
+
+/* Buttons */
+
+.tool-btn {
+  width: 100%;
+
+  padding: 14px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background: #1565c0;
+
+  color: white;
+
+  font-size: 16px;
+
+  cursor: pointer;
+
+  position: relative;
+
+  z-index: 30;
+}
+
+.tool-btn:hover {
+  background: #0d47a1;
+}
+
+.secondary {
+  background: #ff9800;
+}
+
+.secondary:hover {
+  background: #ef6c00;
+}
+
+.success {
+  background: #2e7d32;
+}
+
+.success:hover {
+  background: #1b5e20;
+}
+
+.undo-btn {
+  background: #673ab7;
+}
+
+.redo-btn {
+  background: #009688;
+}
+
+/* Canvas */
+
+.canvas-section {
+  flex: 1;
+
+  padding: 30px;
+
+  position: relative;
+
+  z-index: 1;
+}
+
+.canvas-section h2 {
+  color: #1565c0;
+
+  margin-bottom: 20px;
+}
+
+app-paint-canvas {
+  display: block;
+
+  position: relative;
+
+  z-index: 1;
+}
+
+canvas {
+  width: 100%;
+
+  max-width: 900px;
+
+  border: 2px solid #dcdcdc;
+
+  border-radius: 10px;
+
+  background: white;
+
+  display: block;
+
+  margin: auto;
+}

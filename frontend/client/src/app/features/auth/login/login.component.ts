@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -11,23 +13,55 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
   styleUrl: './login.component.scss',
 })
 export class LoginComponent {
-  hidePassword: boolean = true;
+  hidePassword = true;
+
+  isLoading = false;
+  errorMessage = '';
 
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
-
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router,
+  ) {}
 
   onSubmit(): void {
-    if (this.loginForm.valid) {
-      console.log('Login Data:', this.loginForm.value);
+    this.errorMessage = '';
 
-      // Backend API integration will be added later
-    } else {
+    if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
+      return;
     }
+
+    this.isLoading = true;
+
+    const { email, password } = this.loginForm.getRawValue();
+
+    this.authService
+      .login({
+        email,
+        password,
+      })
+      .subscribe({
+        next: (response) => {
+          this.isLoading = false;
+
+          this.authService.saveToken(response.token);
+
+          alert('Login Successful');
+
+          this.router.navigate(['/dashboard']);
+        },
+
+        error: (error) => {
+          this.isLoading = false;
+
+          this.errorMessage = error.error?.message || 'Login Failed';
+        },
+      });
   }
 }

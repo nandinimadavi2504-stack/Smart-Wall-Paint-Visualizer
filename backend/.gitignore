@@ -1,0 +1,21 @@
+# Python
+
+ai-service/venv/
+ai-service/__pycache__/
+*.pyc
+
+# Upload files
+
+uploads/
+
+# SAM model
+
+*.pth
+
+# Node
+
+node_modules/
+
+# Environment
+
+.env

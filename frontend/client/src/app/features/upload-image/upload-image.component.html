@@ -1,0 +1,52 @@
+<div class="upload-page">
+  <div class="upload-card">
+    <h1>🏠 Upload Room Image</h1>
+
+    <p>Select a room image before painting.</p>
+
+    <div class="form-group">
+      <label for="roomImage"> Choose Room Image </label>
+
+      <input
+        id="roomImage"
+        type="file"
+        accept=".jpg,.jpeg,.png"
+        (change)="onFileSelected($event)"
+      />
+    </div>
+
+    @if (errorMessage) {
+      <div class="error-message">
+        {{ errorMessage }}
+      </div>
+    }
+
+    @if (successMessage) {
+      <div class="success-message">
+        {{ successMessage }}
+      </div>
+    }
+
+    @if (previewUrl) {
+      <div class="preview-container">
+        <h3>Image Preview</h3>
+
+        <img [src]="previewUrl" class="preview-image" alt="Preview" />
+
+        <button class="upload-btn" (click)="uploadImage()">Upload Image</button>
+      </div>
+    }
+
+    @if (uploadedImageUrl) {
+      <div class="uploaded-container">
+        <h3>Image Uploaded Successfully</h3>
+
+        <img [src]="uploadedImageUrl" class="uploaded-image" alt="Uploaded" />
+
+        <button class="continue-btn" (click)="continueToPaint()">
+          Continue to Paint
+        </button>
+      </div>
+    }
+  </div>
+</div>

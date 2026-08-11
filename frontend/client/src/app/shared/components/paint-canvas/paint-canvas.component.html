@@ -1,0 +1,47 @@
+<div class="paint-canvas-container">
+  <div class="canvas-wrapper">
+    <canvas
+      #paintCanvas
+      width="900"
+      height="600"
+      (mousemove)="onMouseMove($event)"
+      (click)="onCanvasClick($event)"
+    >
+    </canvas>
+
+    <!-- Selected Click Point -->
+
+    <div
+      class="selection-box"
+      *ngIf="clickedX !== -1 && clickedY !== -1"
+      [style.left.px]="clickedX"
+      [style.top.px]="clickedY"
+    ></div>
+  </div>
+
+  <!-- AI Segment Status -->
+
+  <div class="coordinates" *ngIf="selectedAISegment !== null">
+    AI Segment Selected:
+    {{ selectedAISegment?.id }}
+  </div>
+
+  <div class="coordinates">
+    Mouse:
+    {{ mouseX }},
+    {{ mouseY }}
+  </div>
+
+  <div class="coordinates">
+    Selected:
+    {{ clickedX }},
+    {{ clickedY }}
+  </div>
+
+  <div class="coordinates">
+    RGB: (
+    {{ red }}, {{ green }},
+    {{ blue }}
+    )
+  </div>
+</div>

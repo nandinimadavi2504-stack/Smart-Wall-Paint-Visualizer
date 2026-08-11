@@ -1,0 +1,60 @@
+.dashboard {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #1565c0, #42a5f5);
+  padding: 30px;
+}
+
+.dashboard-card {
+  width: 500px;
+  background: white;
+  padding: 40px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.18);
+}
+
+.dashboard-card h1 {
+  color: #1565c0;
+  margin-bottom: 15px;
+}
+
+.dashboard-card h2 {
+  margin-bottom: 10px;
+}
+
+.dashboard-card p {
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.dashboard-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.primary-btn,
+.secondary-btn,
+.logout-btn {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.primary-btn {
+  background: #1565c0;
+}
+
+.secondary-btn {
+  background: #42a5f5;
+}
+
+.logout-btn {
+  background: #d32f2f;
+}

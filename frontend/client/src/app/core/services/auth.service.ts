@@ -1,12 +1,27 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
+  private http = inject(HttpClient);
+
+  private readonly API_URL = 'http://localhost:5000/api/auth';
   private readonly TOKEN_KEY = 'jwt_token';
 
   constructor() {}
+
+  // Register User
+  register(userData: any): Observable<any> {
+    return this.http.post(`${this.API_URL}/register`, userData);
+  }
+
+  // Login User
+  login(credentials: any): Observable<any> {
+    return this.http.post(`${this.API_URL}/login`, credentials);
+  }
 
   // Save JWT Token
   saveToken(token: string): void {
@@ -20,10 +35,10 @@ export class AuthService {
 
   // Check Login Status
   isLoggedIn(): boolean {
-    return this.getToken() !== null;
+    return !!this.getToken();
   }
 
-  // Logout
+  // Logout User
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
   }

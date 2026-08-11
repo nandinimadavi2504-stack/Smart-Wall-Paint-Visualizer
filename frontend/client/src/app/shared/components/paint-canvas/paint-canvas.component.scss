@@ -1,0 +1,79 @@
+.paint-canvas-container {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 12px;
+}
+
+.canvas-wrapper {
+  position: relative;
+
+  width: 900px;
+
+  max-width: 100%;
+}
+
+canvas {
+  width: 100%;
+
+  max-width: 900px;
+
+  border: 2px solid #dcdcdc;
+
+  border-radius: 12px;
+
+  cursor: crosshair;
+
+  background: white;
+
+  display: block;
+}
+
+.selection-box {
+  position: absolute;
+
+  width: 12px;
+
+  height: 12px;
+
+  border: 3px solid rgba(14, 13, 13, 0.753);
+
+  border-radius: 50%;
+
+  transform: translate(-50%, -50%);
+
+  pointer-events: none;
+
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+
+    transform: translate(-50%, -50%) scale(1.4);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.coordinates {
+  font-size: 16px;
+
+  font-weight: 600;
+
+  color: #ecedf1;
+}

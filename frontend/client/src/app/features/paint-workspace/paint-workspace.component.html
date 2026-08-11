@@ -1,0 +1,81 @@
+<div class="workspace">
+  <!-- Sidebar -->
+
+  <aside class="sidebar">
+    <h2>🎨 Paint Tools</h2>
+
+    <div class="tool-section">
+      <label for="paintColor"> Choose Paint Color </label>
+
+      <input id="paintColor" type="color" [(ngModel)]="selectedColor" />
+    </div>
+
+    <div class="tool-section">
+      <label for="paintStrength">
+        Paint Strength:
+        {{ paintStrength * 100 }}%
+      </label>
+
+      <input
+        id="paintStrength"
+        type="range"
+        min="0.1"
+        max="1"
+        step="0.05"
+        [(ngModel)]="paintStrength"
+        (input)="updatePaintStrength()"
+      />
+    </div>
+
+    <!-- SAM Selection -->
+
+    <div class="tool-section">
+      <h3>🤖 AI Segmentation</h3>
+
+      <p>Click any wall, floor, or object on image to select it.</p>
+    </div>
+
+    <div class="tool-section">
+      <button type="button" class="tool-btn" (click)="applyPaint()">
+        🎨 Apply Paint
+      </button>
+    </div>
+
+    <div class="tool-section">
+      <button type="button" class="tool-btn secondary" (click)="resetPaint()">
+        🔄 Reset
+      </button>
+    </div>
+
+    <div class="tool-section">
+      <button type="button" class="tool-btn undo-btn" (click)="undo()">
+        ↩ Undo
+      </button>
+
+      <button type="button" class="tool-btn redo-btn" (click)="redo()">
+        ↪ Redo
+      </button>
+    </div>
+
+    <div class="tool-section">
+      <button type="button" class="tool-btn success" (click)="saveDesign()">
+        💾 Save Design
+      </button>
+    </div>
+  </aside>
+
+  <!-- Canvas -->
+
+  <main class="canvas-section">
+    <h2>🏠 Room Preview</h2>
+
+    <app-paint-canvas
+      [imageUrl]="uploadedImage"
+      [imageFile]="imageFile"
+      [selectedColor]="selectedColor"
+      (segmentSelected)="receiveSegment($event)"
+      #canvasComponent
+    >
+    </app-paint-canvas>
+  </main>
+</div>
