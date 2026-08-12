@@ -8,7 +8,8 @@ import { Observable } from 'rxjs';
 export class AuthService {
   private http = inject(HttpClient);
 
-  private readonly API_URL = 'http://localhost:5000/api/auth';
+  private readonly API_URL =
+    'https://smart-wall-paint-visualizer-1.onrender.com/api/auth';
   private readonly TOKEN_KEY = 'jwt_token';
 
   constructor() {}

@@ -6,8 +6,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class UploadService {
-  private apiUrl = 'http://localhost:5000/api/upload';
-
+  private apiUrl =
+    'https://smart-wall-paint-visualizer-1.onrender.com/api/upload';
   constructor(private http: HttpClient) {}
 
   uploadImage(file: File): Observable<any> {

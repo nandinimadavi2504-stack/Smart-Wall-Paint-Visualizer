@@ -7,8 +7,7 @@ exports.uploadImage = (req, res) => {
       });
     }
 
-    const imageUrl = `http://localhost:5000/uploads/${req.file.filename}`;
-
+    const imageUrl = `https://smart-wall-paint-visualizer-1.onrender.com/uploads/${req.file.filename}`;
     res.status(200).json({
       success: true,
       message: "Image uploaded successfully.",
