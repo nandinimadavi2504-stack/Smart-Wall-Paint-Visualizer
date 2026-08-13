@@ -1,7 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 
-from segment_anything import (
+from mobile_sam import (
     sam_model_registry,
     SamAutomaticMaskGenerator,
     SamPredictor
@@ -20,18 +20,16 @@ app = FastAPI(
 
 
 # ==========================
-# LOAD SAM MODEL
+# LOAD MOBILE SAM MODEL
 # ==========================
 
-MODEL_PATH = "models/sam_vit_b_01ec64.pth"
+MODEL_PATH = "models/mobile_sam.pt"
 
-sam = sam_model_registry["vit_b"](
+sam = sam_model_registry["vit_t"](
     checkpoint=MODEL_PATH
 )
 
-
-print("SAM Model Loaded Successfully")
-
+print("MobileSAM Model Loaded Successfully")
 
 
 # ==========================
@@ -49,8 +47,8 @@ mask_generator = SamAutomaticMaskGenerator(
     stability_score_thresh=0.95,
 
     crop_n_layers=0
-)
 
+)
 
 
 # ==========================
@@ -60,13 +58,11 @@ mask_generator = SamAutomaticMaskGenerator(
 predictor = SamPredictor(sam)
 
 
-
 # ==========================
 # CACHE
 # ==========================
 
 cached_file_name = None
-
 cached_original_size = None
 
 
@@ -80,7 +76,8 @@ app.add_middleware(
     CORSMiddleware,
 
     allow_origins=[
-        "http://localhost:4200"
+        "http://localhost:4200",
+        "https://smart-wall-paint-visualizer-kappa.vercel.app"
     ],
 
     allow_credentials=True,
@@ -103,7 +100,7 @@ def home():
     return {
 
         "message":
-        "AI Segmentation Service Running"
+        "MobileSAM AI Segmentation Service Running"
 
     }
 
@@ -161,7 +158,11 @@ async def segment_image(
         "number_of_segments": len(masks)
 
     }
-    # ==========================
+
+
+
+
+# ==========================
 # MULTI POINT SEGMENTATION
 # ==========================
 
@@ -216,7 +217,7 @@ async def segment_point(
 
 
         print(
-            "SAM image loaded"
+            "MobileSAM image loaded"
         )
 
 
@@ -265,7 +266,7 @@ async def segment_point(
 
 
     print(
-        "SAM Points:",
+        "MobileSAM Points:",
         sam_points
     )
 
@@ -277,8 +278,11 @@ async def segment_point(
 
 
     input_labels = np.ones(
+
         len(sam_points),
+
         dtype=np.int32
+
     )
 
 
@@ -332,11 +336,10 @@ async def segment_point(
         )
 
 
-        # Remove full room/wall masks
-
         if 0.01 < area_ratio < 0.35:
 
             valid_masks.append(i)
+
 
 
 
@@ -423,6 +426,6 @@ async def segment_point(
 
         "message":
 
-        "Multi point mask generated successfully"
+        "MobileSAM mask generated successfully"
 
     }
