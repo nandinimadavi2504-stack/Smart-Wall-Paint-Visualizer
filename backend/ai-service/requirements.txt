@@ -11,5 +11,4 @@ torchvision==0.28.0
 
 segment-anything==1.0
 
-mobile-sam
 timm
