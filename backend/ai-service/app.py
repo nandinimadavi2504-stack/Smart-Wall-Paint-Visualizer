@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from mobile_sam import (
     sam_model_registry,
-    SamAutomaticMaskGenerator,
     SamPredictor
 )
 
@@ -12,6 +11,7 @@ from PIL import Image
 import numpy as np
 import io
 import json
+import torch
 
 
 app = FastAPI(
@@ -20,42 +20,35 @@ app = FastAPI(
 
 
 # ==========================
-# LOAD MOBILE SAM MODEL
+# MOBILE SAM CONFIG
 # ==========================
 
 MODEL_PATH = "models/mobile_sam.pt"
 
-sam = sam_model_registry["vit_t"](
-    checkpoint=MODEL_PATH
-)
 
-print("MobileSAM Model Loaded Successfully")
+sam = None
+predictor = None
 
 
-# ==========================
-# AUTOMATIC MASK GENERATOR
-# ==========================
+def load_model():
 
-mask_generator = SamAutomaticMaskGenerator(
+    global sam
+    global predictor
 
-    model=sam,
+    if sam is None:
 
-    points_per_side=8,
+        print("Loading MobileSAM model...")
 
-    pred_iou_thresh=0.88,
+        sam = sam_model_registry["vit_t"](
+            checkpoint=MODEL_PATH
+        )
 
-    stability_score_thresh=0.95,
+        sam.to(device="cpu")
 
-    crop_n_layers=0
+        predictor = SamPredictor(sam)
 
-)
+        print("MobileSAM Model Loaded Successfully")
 
-
-# ==========================
-# POINT PREDICTOR
-# ==========================
-
-predictor = SamPredictor(sam)
 
 
 # ==========================
@@ -107,62 +100,6 @@ def home():
 
 
 # ==========================
-# AUTOMATIC SEGMENTATION
-# ==========================
-
-@app.post("/segment")
-async def segment_image(
-
-    file: UploadFile = File(...)
-
-):
-
-    image_bytes = await file.read()
-
-
-    image = Image.open(
-        io.BytesIO(image_bytes)
-    ).convert("RGB")
-
-
-    image = image.resize(
-        (512,288)
-    )
-
-
-    image_array = np.array(
-        image
-    )
-
-
-    print(
-        "Generating masks..."
-    )
-
-
-    masks = mask_generator.generate(
-        image_array
-    )
-
-
-    print(
-        "Total segments:",
-        len(masks)
-    )
-
-
-    return {
-
-        "success": True,
-
-        "number_of_segments": len(masks)
-
-    }
-
-
-
-
-# ==========================
 # MULTI POINT SEGMENTATION
 # ==========================
 
@@ -177,6 +114,11 @@ async def segment_point(
 
     global cached_file_name
     global cached_original_size
+
+
+    # Load model only when required
+
+    load_model()
 
 
 
@@ -264,7 +206,6 @@ async def segment_point(
         )
 
 
-
     print(
         "MobileSAM Points:",
         sam_points
@@ -288,18 +229,20 @@ async def segment_point(
 
 
     # ==========================
-    # SAM PREDICTION
+    # PREDICT MASK
     # ==========================
 
-    masks, scores, logits = predictor.predict(
+    with torch.no_grad():
 
-        point_coords=input_points,
+        masks, scores, logits = predictor.predict(
 
-        point_labels=input_labels,
+            point_coords=input_points,
 
-        multimask_output=True
+            point_labels=input_labels,
 
-    )
+            multimask_output=True
+
+        )
 
 
 
@@ -342,9 +285,8 @@ async def segment_point(
 
 
 
-
     # ==========================
-    # SELECT BEST MASK
+    # BEST MASK
     # ==========================
 
     if len(valid_masks) > 0:
@@ -373,7 +315,6 @@ async def segment_point(
     selected_mask = masks[best_index]
 
 
-
     mask_array = (
 
         selected_mask
@@ -385,15 +326,12 @@ async def segment_point(
     )
 
 
-
     print(
 
         "Best Score:",
-
         float(scores[best_index])
 
     )
-
 
 
     return {
@@ -407,21 +345,21 @@ async def segment_point(
 
         "mask_size": {
 
-            "width": 1024,
+            "width":1024,
 
-            "height": 576
+            "height":576
 
         },
 
 
-        "score": float(
+        "score":float(
 
             scores[best_index]
 
         ),
 
 
-        "mask": mask_array,
+        "mask":mask_array,
 
 
         "message":
