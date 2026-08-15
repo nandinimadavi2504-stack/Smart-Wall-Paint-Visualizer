@@ -33,6 +33,7 @@ app.add_middleware(
 )
 
 
+
 # ==========================
 # HOME
 # ==========================
@@ -47,7 +48,7 @@ def home():
 
 
 # ==========================
-# CACHE
+# IMAGE CACHE
 # ==========================
 
 cached_image = None
@@ -74,6 +75,7 @@ async def segment_point(
     global cached_filename
 
 
+
     # ----------------------
     # Load Image
     # ----------------------
@@ -81,6 +83,7 @@ async def segment_point(
     if cached_filename != file.filename:
 
         print("LOADING IMAGE")
+
 
         image_bytes = await file.read()
 
@@ -110,7 +113,7 @@ async def segment_point(
 
 
 
-    # Resize image for speed
+    # Resize for speed
 
     img = cv2.resize(
         img,
@@ -133,14 +136,14 @@ async def segment_point(
     y = int(user_points[0][1])
 
 
-    # keep point inside image
+    # Keep point inside image
 
-    x = min(max(x,0),width-1)
-    y = min(max(y,0),height-1)
+    x = min(max(x,0), width-1)
+    y = min(max(y,0), height-1)
 
 
 
-    print("POINT:",x,y)
+    print("POINT:", x, y)
 
 
 
@@ -169,12 +172,14 @@ async def segment_point(
     )
 
 
+
     rect = (
 
-        max(x-40,0),
-        max(y-40,0),
-        80,
-        80
+        max(x-150,0),
+        max(y-150,0),
+        300,
+        300
+
     )
 
 
@@ -186,7 +191,7 @@ async def segment_point(
         rect,
         bgdModel,
         fgdModel,
-        1,
+        3,
         cv2.GC_INIT_WITH_RECT
 
     )
@@ -195,6 +200,10 @@ async def segment_point(
     print("GRABCUT FINISHED")
 
 
+
+    # ----------------------
+    # Create Mask
+    # ----------------------
 
     final_mask = np.where(
 
@@ -207,9 +216,29 @@ async def segment_point(
     )
 
 
+
     final_mask = final_mask.astype(
         np.uint8
     )
+
+
+
+    # Reduce mask size
+
+    final_mask = cv2.resize(
+
+        final_mask,
+
+        (128,128),
+
+        interpolation=cv2.INTER_NEAREST
+
+    )
+
+
+
+    print("MASK GENERATED")
+    print("MASK UNIQUE VALUES:", np.unique(final_mask))
 
 
 
@@ -224,14 +253,15 @@ async def segment_point(
 
         "mask_size": {
 
-            "width": width,
+            "width": 128,
 
-            "height": height
+            "height": 128
 
         },
 
 
-        "mask": "MASK_GENERATED",
+        "mask": final_mask.tolist(),
+
 
         "score": 0.95,
 

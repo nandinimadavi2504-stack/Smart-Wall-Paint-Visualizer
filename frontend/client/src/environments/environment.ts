@@ -1,4 +1,5 @@
 export const environment = {
   production: false,
-  aiApiUrl: 'https://smart-wall-paint-visualizer-2.onrender.com',
+
+  aiApiUrl: 'http://127.0.0.1:8000',
 };
