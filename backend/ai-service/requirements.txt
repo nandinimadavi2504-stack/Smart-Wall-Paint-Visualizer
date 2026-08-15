@@ -1,14 +1,7 @@
-fastapi==0.141.1
-uvicorn==0.52.1
-python-multipart==0.0.32
+fastapi==0.115.0
+uvicorn==0.30.6
+python-multipart==0.0.9
 
-opencv-python==5.0.0.93
-numpy==2.5.1
-pillow==12.3.0
-
-torch==2.13.0
-torchvision==0.28.0
-
-segment-anything==1.0
-
-timm
+opencv-python-headless==4.10.0.84
+numpy==1.26.4
+pillow==10.4.0

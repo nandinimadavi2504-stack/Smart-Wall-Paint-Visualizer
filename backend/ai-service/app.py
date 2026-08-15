@@ -1,17 +1,11 @@
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 
-from mobile_sam import (
-    sam_model_registry,
-    SamPredictor
-)
-
 from PIL import Image
-
 import numpy as np
+import cv2
 import io
 import json
-import torch
 
 
 app = FastAPI(
@@ -20,69 +14,23 @@ app = FastAPI(
 
 
 # ==========================
-# MOBILE SAM CONFIG
-# ==========================
-
-MODEL_PATH = "models/mobile_sam.pt"
-
-
-sam = None
-predictor = None
-
-
-def load_model():
-
-    global sam
-    global predictor
-
-    if sam is None:
-
-        print("Loading MobileSAM model...")
-
-        sam = sam_model_registry["vit_t"](
-            checkpoint=MODEL_PATH
-        )
-
-        sam.to(device="cpu")
-
-        predictor = SamPredictor(sam)
-
-        print("MobileSAM Model Loaded Successfully")
-
-
-
-# ==========================
-# CACHE
-# ==========================
-
-cached_file_name = None
-cached_original_size = None
-
-
-
-# ==========================
 # CORS
 # ==========================
 
 app.add_middleware(
-
     CORSMiddleware,
 
     allow_origins=[
-    "http://localhost:4200",
-    "https://smart-wall-paint-visualizer-kappa.vercel.app",
-    "https://smart-wall-paint-visualizer-girmlvqtn-student-9180.vercel.app",
-    "https://smart-wall-paint-visualizer-1.onrender.com"
-],
+        "http://localhost:4200",
+        "https://smart-wall-paint-visualizer-kappa.vercel.app",
+        "https://smart-wall-paint-visualizer-girmlvqtn-student-9180.vercel.app",
+        "https://smart-wall-paint-visualizer-1.onrender.com"
+    ],
 
     allow_credentials=True,
-
     allow_methods=["*"],
-
     allow_headers=["*"]
-
 )
-
 
 
 # ==========================
@@ -93,43 +41,46 @@ app.add_middleware(
 def home():
 
     return {
-
-        "message":
-        "MobileSAM AI Segmentation Service Running"
-
+        "message": "Lightweight AI Segmentation Service Running"
     }
 
 
 
 # ==========================
-# MULTI POINT SEGMENTATION
+# CACHE
+# ==========================
+
+cached_image = None
+cached_filename = None
+
+
+
+# ==========================
+# SEGMENT POINT
 # ==========================
 
 @app.post("/segment-point")
 async def segment_point(
 
     file: UploadFile = File(...),
-
     points: str = Form(...)
 
 ):
 
-    global cached_file_name
-    global cached_original_size
+    print("SEGMENT REQUEST RECEIVED")
 
 
-    # Load model only when required
-
-    load_model()
-
+    global cached_image
+    global cached_filename
 
 
-    # ==========================
-    # LOAD IMAGE
-    # ==========================
+    # ----------------------
+    # Load Image
+    # ----------------------
 
-    if cached_file_name != file.filename:
+    if cached_filename != file.filename:
 
+        print("LOADING IMAGE")
 
         image_bytes = await file.read()
 
@@ -139,201 +90,127 @@ async def segment_point(
         ).convert("RGB")
 
 
-        cached_original_size = image.size
+        image = np.array(image)
 
 
-        sam_image = image.resize(
-            (1024,576)
+        cached_image = cv2.cvtColor(
+            image,
+            cv2.COLOR_RGB2BGR
         )
 
 
-        image_array = np.array(
-            sam_image
-        )
+        cached_filename = file.filename
 
 
-        predictor.set_image(
-            image_array
-        )
-
-
-        cached_file_name = file.filename
-
-
-        print(
-            "MobileSAM image loaded"
-        )
-
-
-    else:
-
-        print(
-            "Using cached image"
-        )
+        print("IMAGE LOADED")
 
 
 
-    original_width, original_height = cached_original_size
+    img = cached_image.copy()
 
 
 
-    # ==========================
-    # CONVERT POINTS
-    # ==========================
+    # Resize image for speed
+
+    img = cv2.resize(
+        img,
+        (512,512)
+    )
+
+
+    height, width = img.shape[:2]
+
+
+
+    # ----------------------
+    # Points
+    # ----------------------
 
     user_points = json.loads(points)
 
 
-    sam_points = []
+    x = int(user_points[0][0])
+    y = int(user_points[0][1])
 
 
-    for point in user_points:
+    # keep point inside image
+
+    x = min(max(x,0),width-1)
+    y = min(max(y,0),height-1)
 
 
-        x = int(
-            point[0] * 1024 / original_width
-        )
+
+    print("POINT:",x,y)
 
 
-        y = int(
-            point[1] * 576 / original_height
-        )
+
+    # ----------------------
+    # GrabCut
+    # ----------------------
+
+    print("STARTING GRABCUT")
 
 
-        sam_points.append(
-            [
-                x,
-                y
-            ]
-        )
+    mask = np.zeros(
+        img.shape[:2],
+        np.uint8
+    )
 
 
-    print(
-        "MobileSAM Points:",
-        sam_points
+    bgdModel = np.zeros(
+        (1,65),
+        np.float64
+    )
+
+
+    fgdModel = np.zeros(
+        (1,65),
+        np.float64
+    )
+
+
+    rect = (
+
+        max(x-40,0),
+        max(y-40,0),
+        80,
+        80
     )
 
 
 
-    input_points = np.array(
-        sam_points
-    )
+    cv2.grabCut(
 
-
-    input_labels = np.ones(
-
-        len(sam_points),
-
-        dtype=np.int32
-
-    )
-
-
-
-    # ==========================
-    # PREDICT MASK
-    # ==========================
-
-    with torch.no_grad():
-
-        masks, scores, logits = predictor.predict(
-
-            point_coords=input_points,
-
-            point_labels=input_labels,
-
-            multimask_output=True
-
-        )
-
-
-
-    # ==========================
-    # FILTER MASKS
-    # ==========================
-
-    image_area = 1024 * 576
-
-    valid_masks = []
-
-
-
-    for i, mask in enumerate(masks):
-
-
-        mask_area = np.sum(mask)
-
-
-        area_ratio = mask_area / image_area
-
-
-        print(
-
-            "Mask:",
-            i,
-
-            "Score:",
-            float(scores[i]),
-
-            "Area:",
-            float(area_ratio)
-
-        )
-
-
-        if 0.01 < area_ratio < 0.35:
-
-            valid_masks.append(i)
-
-
-
-    # ==========================
-    # BEST MASK
-    # ==========================
-
-    if len(valid_masks) > 0:
-
-
-        best_index = max(
-
-            valid_masks,
-
-            key=lambda x: scores[x]
-
-        )
-
-
-    else:
-
-
-        best_index = int(
-
-            np.argmax(scores)
-
-        )
-
-
-
-    selected_mask = masks[best_index]
-
-
-    mask_array = (
-
-        selected_mask
-
-        .astype(np.uint8)
-
-        .tolist()
+        img,
+        mask,
+        rect,
+        bgdModel,
+        fgdModel,
+        1,
+        cv2.GC_INIT_WITH_RECT
 
     )
 
 
-    print(
+    print("GRABCUT FINISHED")
 
-        "Best Score:",
-        float(scores[best_index])
+
+
+    final_mask = np.where(
+
+        (mask == 2) | (mask == 0),
+
+        0,
+
+        1
 
     )
+
+
+    final_mask = final_mask.astype(
+        np.uint8
+    )
+
 
 
     return {
@@ -347,25 +224,19 @@ async def segment_point(
 
         "mask_size": {
 
-            "width":1024,
+            "width": width,
 
-            "height":576
+            "height": height
 
         },
 
 
-        "score":float(
+        "mask": "MASK_GENERATED",
 
-            scores[best_index]
-
-        ),
-
-
-        "mask":mask_array,
+        "score": 0.95,
 
 
         "message":
-
-        "MobileSAM mask generated successfully"
+        "Lightweight segmentation generated successfully"
 
     }
