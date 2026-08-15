@@ -72,6 +72,7 @@ app.add_middleware(
         "http://localhost:4200",
         "https://smart-wall-paint-visualizer-kappa.vercel.app"
         "https://smart-wall-paint-visualizer-girmlvqtn-student-9180.vercel.app"
+        "https://smart-wall-paint-visualizer-1.onrender.com"
     ],
 
     allow_credentials=True,
